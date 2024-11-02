@@ -12,5 +12,12 @@
   "author": {
     "name": "Richard Essuman",
     "email": "ressuman001@gmail.com"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }
