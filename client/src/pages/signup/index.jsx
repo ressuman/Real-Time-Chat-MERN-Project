@@ -1,4 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { signupUser } from "../../api/auth";
 
 export default function Signup() {
   const [user, setUser] = React.useState({
@@ -7,6 +9,47 @@ export default function Signup() {
     email: "",
     password: "",
   });
+
+  async function onFormSubmit(event) {
+    event.preventDefault();
+    let response = null;
+
+    // Validation: Check for empty fields
+    if (!user.firstName || !user.lastName || !user.email || !user.password) {
+      //toast.error("Please fill in all fields.");
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    // Validation: Check for valid email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(user.email)) {
+      //toast.error("Please enter a valid email address.");
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    try {
+      //dispatch(showLoader());
+      response = await signupUser(user);
+
+      if (response?.success) {
+        //toast.success(response.message);
+        alert(response.message);
+      } else {
+        //toast.error(response?.message || "Signup failed. Please try again.");
+        alert(response.message || "Signup failed. Please try again.");
+      }
+    } catch (err) {
+      // Handle unexpected errors
+      // toast.error(
+      //   err.response?.data?.message || "An unexpected error occurred."
+      // );
+      alert(err.response?.data?.message || "An unexpected error occurred.");
+    } finally {
+      // dispatch(hideLoader()); // Ensure the loader is always hidden
+    }
+  }
 
   return (
     <div className="container">
@@ -17,7 +60,7 @@ export default function Signup() {
           <h1>Create Account</h1>
         </div>
         <div className="form">
-          <form>
+          <form onSubmit={onFormSubmit}>
             <div className="column">
               <input
                 type="text"
@@ -52,7 +95,7 @@ export default function Signup() {
         <div className="card_terms">
           <span>
             Already have an account?{""}
-            <a href="#gh">Login Here</a>
+            <Link to="/login">Login Here</Link>
           </span>
         </div>
       </div>
