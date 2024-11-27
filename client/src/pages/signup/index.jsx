@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { signupUser } from "../../api/auth";
+import { toast } from "react-hot-toast";
 
 export default function Signup() {
   const [user, setUser] = React.useState({
@@ -15,37 +16,34 @@ export default function Signup() {
     let response = null;
 
     // Validation: Check for empty fields
-    if (!user.firstName || !user.lastName || !user.email || !user.password) {
-      //toast.error("Please fill in all fields.");
-      alert("Please fill in all fields.");
-      return;
-    }
+    // if (!user.firstName || !user.lastName || !user.email || !user.password) {
+    //   //toast.error("Please fill in all fields.");
+    //   alert("Please fill in all fields.");
+    //   return;
+    // }
 
     // Validation: Check for valid email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(user.email)) {
-      //toast.error("Please enter a valid email address.");
-      alert("Please enter a valid email address.");
-      return;
-    }
+    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    // if (!emailRegex.test(user.email)) {
+    //   //toast.error("Please enter a valid email address.");
+    //   alert("Please enter a valid email address.");
+    //   return;
+    // }
 
     try {
       //dispatch(showLoader());
       response = await signupUser(user);
 
       if (response?.success) {
-        //toast.success(response.message);
-        alert(response.message);
+        toast.success(response.message);
       } else {
-        //toast.error(response?.message || "Signup failed. Please try again.");
-        alert(response.message || "Signup failed. Please try again.");
+        toast.error(response?.message || "Signup failed. Please try again.");
       }
     } catch (err) {
       // Handle unexpected errors
-      // toast.error(
-      //   err.response?.data?.message || "An unexpected error occurred."
-      // );
-      alert(err.response?.data?.message || "An unexpected error occurred.");
+      toast.error(
+        err.response?.data?.message || "An unexpected error occurred."
+      );
     } finally {
       // dispatch(hideLoader()); // Ensure the loader is always hidden
     }

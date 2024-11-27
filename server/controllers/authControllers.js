@@ -12,7 +12,7 @@ exports.signup = async (req, res) => {
 
     //3. If user exists, send an error response
     if (existingUser) {
-      return res.status(404).send({
+      return res.send({
         message: "User already exists.",
         success: false,
       });
@@ -38,7 +38,7 @@ exports.signup = async (req, res) => {
       success: true,
     });
   } catch (error) {
-    res.status(500).send({
+    res.send({
       message: error.message,
       success: false,
     });
@@ -53,7 +53,7 @@ exports.login = async (req, res) => {
     // 2. Check if the user exists in the database
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return res.status(404).send({
+      return res.send({
         message: "User not found.",
         success: false,
       });
@@ -62,7 +62,7 @@ exports.login = async (req, res) => {
     // 3. Compare the provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).send({
+      return res.send({
         message: "Invalid credentials.",
         success: false,
       });
@@ -86,7 +86,7 @@ exports.login = async (req, res) => {
       token,
     });
   } catch (error) {
-    res.status(500).send({
+    res.send({
       message: error.message,
       success: false,
     });

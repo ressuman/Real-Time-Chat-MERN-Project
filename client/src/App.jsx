@@ -4,10 +4,12 @@ import Profile from "./pages/profile";
 import Login from "./pages/login";
 import Signup from "./pages/signup";
 import NotFound from "./pages/not-found";
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <>
+      <Toaster position="top-center" reverseOrder={false} />
       <BrowserRouter>
         <Routes>
           {/* Protected Routes */}

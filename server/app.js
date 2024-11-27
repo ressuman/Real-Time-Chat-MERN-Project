@@ -11,6 +11,14 @@ app.use(cors());
 
 app.use(express.json());
 
+app.get("/api", (req, res) => {
+  res.json({
+    success: true,
+    message: "Welcome to the QuikChat Chat App API",
+    documentation: "visit /api-docs for more info",
+  });
+});
+
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);

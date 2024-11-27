@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { loginUser } from "../../api/auth";
+import { toast } from "react-hot-toast";
 
 export default function Login() {
   const [user, setUser] = React.useState({
@@ -9,24 +11,32 @@ export default function Login() {
 
   async function onFormSubmit(event) {
     event.preventDefault();
-    console.log(user);
-    //  let response = null;
-    //  try {
-    //    dispatch(showLoader());
-    //    response = await loginUser(user);
-    //    dispatch(hideLoader());
 
-    //    if (response.success) {
-    //      toast.success(response.message);
-    //      localStorage.setItem("token", response.token);
-    //      window.location.href = "/";
-    //    } else {
-    //      toast.error(response.message);
-    //    }
-    //  } catch (error) {
-    //    dispatch(hideLoader());
-    //    toast.error(response.message);
-    //  }
+    let response = null;
+    try {
+      //dispatch(showLoader());
+      response = await loginUser(user);
+      //dispatch(hideLoader());
+
+      if (response.success) {
+        toast.success(response.message);
+        localStorage.setItem("token", response.token);
+
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      } else {
+        toast.error(response.message);
+      }
+    } catch (error) {
+      //dispatch(hideLoader());
+      toast.error(response.message);
+      console.log("Error details:", {
+        message: error.message,
+        response: error.response,
+        request: error.request,
+      });
+    }
   }
 
   return (
