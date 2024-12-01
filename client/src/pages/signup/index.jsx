@@ -2,8 +2,12 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { signupUser } from "../../api/auth";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { hideLoader, showLoader } from "../../redux/slice/loaderSlice";
 
 export default function Signup() {
+  const dispatch = useDispatch();
+
   const [user, setUser] = React.useState({
     firstName: "",
     lastName: "",
@@ -31,7 +35,7 @@ export default function Signup() {
     // }
 
     try {
-      //dispatch(showLoader());
+      dispatch(showLoader());
       response = await signupUser(user);
 
       if (response?.success) {
@@ -45,7 +49,7 @@ export default function Signup() {
         err.response?.data?.message || "An unexpected error occurred."
       );
     } finally {
-      // dispatch(hideLoader()); // Ensure the loader is always hidden
+      dispatch(hideLoader()); // Ensure the loader is always hidden
     }
   }
 
