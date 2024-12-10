@@ -171,3 +171,103 @@
     transform: rotate(1800deg);
   }
 }
+
+/*******************************************************
+********CSS FOR HOME PAGE*******************************
+********************************************************/
+.home-page {
+  background-color: #fdedec;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content {
+  display: flex;
+  width: 90%;
+  margin: 10px auto;
+  padding: 10px 10px;
+  flex: 1;
+}
+
+/*******************************************************
+********CSS FOR HEADER COMPONENT************************
+********************************************************/
+.app-header {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 10px 30px;
+  justify-content: space-between;
+  border-bottom: #bbb 1px solid;
+}
+
+.app-logo {
+  display: flex;
+  flex-wrap: nowrap;
+  color: #28282b;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+i {
+  margin: 5px 10px;
+}
+
+.app-user-profile {
+  display: flex;
+}
+
+.logged-user-name {
+  color: #28282b;
+  font-weight: bold;
+  padding-top: 10px;
+  padding-right: 20px;
+}
+
+.logged-user-profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #e74c3c;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 40px;
+}
+
+/*******************************************************
+********CSS FOR SIDEBAR COMPONENT************************
+********************************************************/
+.app-sidebar {
+  width: 30%;
+  padding: 0px 20px;
+}
+
+/*******************************************************
+********CSS FOR SEARCH COMPONENT************************
+********************************************************/
+
+.user-search-area {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.user-search-text {
+  width: 100%;
+  height: 40px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  color: #28282b;
+  border: #ddd 1px solid;
+}
+
+.user-search-btn {
+  position: absolute;
+  right: 10px;
+  font-size: 25px;
+  color: #e74c3c;
+}
