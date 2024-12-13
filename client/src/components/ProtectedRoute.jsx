@@ -4,7 +4,8 @@ import { getAllUsers, getLoggedUser } from "../api/users";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { hideLoader, showLoader } from "../redux/slice/loaderSlice";
-import { setAllUsers, setUser } from "../redux/slice/usersSlice";
+import { setAllChats, setAllUsers, setUser } from "../redux/slice/usersSlice";
+import { getAllChats } from "../api/chat";
 
 export default function ProtectedRoute({ children }) {
   const navigate = useNavigate();
@@ -90,11 +91,34 @@ export default function ProtectedRoute({ children }) {
     }
   };
 
+  const getCurrentUserChats = async () => {
+    try {
+      const response = await getAllChats();
+
+      if (response.success) {
+        dispatch(setAllChats(response.data));
+      } else {
+        // If the API response indicates failure
+        console.error("Failed to fetch chats:", response.message);
+        navigate("/login"); // Adjust based on your app's logic
+      }
+    } catch (error) {
+      // Check for specific error types (e.g., authentication error)
+      if (error.response?.status === 401) {
+        console.error("Unauthorized access. Redirecting to login.");
+        navigate("/login");
+      } else {
+        console.error("Error fetching chats:", error.message);
+      }
+    }
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       getLoggedInUser();
       fetchAllUsers();
+      getCurrentUserChats();
     } else {
       navigate("/login");
     }
