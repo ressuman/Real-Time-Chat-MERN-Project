@@ -60,14 +60,8 @@ exports.getAllChats = async (req, res) => {
 
     // Fetch all chats where the user is a member, sorted by most recent
     const allChats = await Chat.find({ members: { $in: [userId] } })
-      .populate({
-        path: "members",
-        select: "firstName lastName profilePic",
-      })
-      .populate({
-        path: "lastMessage",
-        select: "text createdAt senderId",
-      })
+      .populate("members")
+      .populate("lastMessage")
       .sort({ updatedAt: -1 });
 
     // Check if chats were found for the user

@@ -3,12 +3,15 @@ import { hideLoader, showLoader } from "../../../redux/slice/loaderSlice";
 import { createNewChat } from "../../../api/chat";
 import toast from "react-hot-toast";
 import { setAllChats, setSelectedChat } from "../../../redux/slice/usersSlice";
+import moment from "moment";
+import { formatName } from "../../../utils/name";
 
 export default function UsersList({ searchKey }) {
   const {
     allUsers,
     allChats,
     user: currentUser,
+    selectedChat,
   } = useSelector((state) => state.userReducer);
 
   const dispatch = useDispatch();
@@ -68,22 +71,48 @@ export default function UsersList({ searchKey }) {
     }
   };
 
+  const isSelectedChat = (user) => {
+    if (!user || !selectedChat) {
+      return false; // If either `user` or `selectedChat` is not available, return false
+    }
+
+    // Ensure `selectedChat.members` exists and is an array
+    if (Array.isArray(selectedChat.members)) {
+      return selectedChat.members.some((member) => member._id === user._id);
+    }
+
+    return false; // Default return if `members` is not an array
+  };
+
+  const getLastMessageTimeStamp = (userId) => {
+    const chat = allChats.find((chat) =>
+      chat.members.some((member) => member._id === userId)
+    );
+
+    if (!chat || !chat.lastMessage) {
+      return ""; // Return empty string if no chat or last message exists
+    }
+
+    return moment(chat.lastMessage.createdAt).format("hh:mm A");
+  };
+
+  const getLastMessage = (userId) => {
+    const chat = allChats.find((chat) =>
+      chat.members.some((member) => member._id === userId)
+    );
+
+    if (!chat || !chat.lastMessage) {
+      return ""; // Return empty string if no chat or last message exists
+    }
+
+    const isSenderCurrentUser = chat.lastMessage.sender === currentUser._id;
+    const msgPrefix = isSenderCurrentUser ? "You: " : "";
+    const messageText = chat.lastMessage.text || "[Media]"; // Fallback for non-text messages
+    return msgPrefix + messageText.substring(0, 25); // Limit to 25 characters
+  };
+
   const filteredUsers = searchKey.trim()
-    ? // ? allUsers.filter((user) => {
-      //     // Check if the search key matches either firstName or lastName
-      //     return (
-      //       user.firstName.toLowerCase().includes(searchKey.toLowerCase()) ||
-      //       user.lastName.toLowerCase().includes(searchKey.toLowerCase())
-      //     );
-      //   })
-      // : allChats
-      //     .filter((chat) =>
-      //       chat.members.some((member) => member._id === currentUser._id)
-      //     )
-      //     .map((chat) =>
-      //       chat.members.find((member) => member._id !== currentUser._id)
-      //     );
-      allUsers.filter((user) => {
+    ? allUsers.filter((user) => {
         // Check if the search key matches either firstName or lastName
         return (
           user.firstName.toLowerCase().includes(searchKey.toLowerCase()) ||
@@ -104,86 +133,68 @@ export default function UsersList({ searchKey }) {
           );
         });
 
-  return (
-    // allUsers.filter((user) => {
-    //   // Check if the search key matches either firstName or lastName
-    //   const matchesSearchKey =
-    //     user.firstName.toLowerCase().includes(searchKey.toLowerCase()) ||
-    //     user.lastName.toLowerCase().includes(searchKey.toLowerCase());
-
-    //   return matchesSearchKey;
-    // }) ||
-    // allChats
-    //   .some((chat) => chat.members.includes(user._id))
-    // .filter((user) => {
-    //   // Filter users by search key or if a chat already exists
-    //   return (
-    //     ((user.firstName.toLowerCase().includes(searchKey.toLowerCase()) ||
-    //       user.lastName.toLowerCase().includes(searchKey.toLowerCase())) &&
-    //       searchKey) ||
-    //     allChats.some((chat) =>
-    //       chat.members.some((member) => member._id === user._id)
-    //     )
-    //   );
-    // })
-    filteredUsers.map((user) => {
-      // Check if a chat already exists between the current user and this user
-      const chatExists = allChats.some(
-        (chat) =>
-          chat.members.some((member) => member._id === currentUser._id) &&
-          chat.members.some((member) => member._id === user._id)
-      );
-      return (
+  return filteredUsers.map((user) => {
+    // Check if a chat already exists between the current user and this user
+    const chatExists = allChats.some(
+      (chat) =>
+        chat.members.some((member) => member._id === currentUser._id) &&
+        chat.members.some((member) => member._id === user._id)
+    );
+    return (
+      <div
+        key={user._id}
+        className="user-search-filter"
+        onClick={() => openChat(user._id)}
+      >
         <div
-          key={user._id}
-          className="user-search-filter"
-          onClick={() => openChat(user._id)}
+          className={isSelectedChat(user) ? "selected-user" : "filtered-user"}
         >
-          <div className="filtered-user">
-            <div className="filter-user-display">
-              {user.profilePic && (
-                <img
-                  src={user.profilePic}
-                  alt="Profile Pic"
-                  className="user-profile-image"
-                />
-              )}
-              {!user.profilePic && (
-                <div className="user-default-profile-pic">
-                  {user.firstName.charAt(0).toUpperCase() +
-                    user.lastName.charAt(0).toUpperCase()}
-                </div>
-              )}
-
-              <div className="filter-user-details">
-                <div className="user-display-name">
-                  {user.firstName + " " + user.lastName}
-                </div>
-                <div className="user-display-email">{user.email}</div>
+          <div className="filter-user-display">
+            {user.profilePic && (
+              <img
+                src={user.profilePic}
+                alt="Profile Pic"
+                className="user-profile-image"
+              />
+            )}
+            {!user.profilePic && (
+              <div
+                className={
+                  isSelectedChat(user)
+                    ? "user-selected-avatar"
+                    : "user-default-avatar"
+                }
+              >
+                {user.firstName.charAt(0).toUpperCase() +
+                  user.lastName.charAt(0).toUpperCase()}
               </div>
+            )}
 
-              {/* {!allChats.find((chat) => chat.members.includes(user._id)) && (
-                <div className="user-start-chat">
-                  <button className="user-start-chat-btn">Start Chat</button>
-                </div>
-              )} */}
-
-              {/* Show Start Chat button only if chat does not exist */}
-              {!chatExists && (
-                <div className="user-start-chat">
-                  <button
-                    type="button"
-                    className="user-start-chat-btn"
-                    onClick={() => startNewChat(user._id)}
-                  >
-                    Start Chat
-                  </button>
-                </div>
-              )}
+            <div className="filter-user-details">
+              <div className="user-display-name">{formatName(user)}</div>
+              <div className="user-display-email">
+                {getLastMessage(user._id) || user.email}
+              </div>
             </div>
+            <div className="last-message-timestamp">
+              {getLastMessageTimeStamp(user._id)}
+            </div>
+
+            {/* Show Start Chat button only if chat does not exist */}
+            {!chatExists && (
+              <div className="user-start-chat">
+                <button
+                  type="button"
+                  className="user-start-chat-btn"
+                  onClick={() => startNewChat(user._id)}
+                >
+                  Start Chat
+                </button>
+              </div>
+            )}
           </div>
         </div>
-      );
-    })
-  );
+      </div>
+    );
+  });
 }

@@ -1,8 +1,11 @@
+import { useSelector } from "react-redux";
 import Chat from "./components/chat";
 import Header from "./components/header";
 import Sidebar from "./components/sidebar";
 
 export default function Home() {
+  const { selectedChat } = useSelector((state) => state.userReducer);
+
   return (
     <div className="home-page">
       <Header />
@@ -10,7 +13,7 @@ export default function Home() {
         {/* <!--SIDEBAR LAYOUT--> */}
         <Sidebar />
         {/* <!--CHAT AREA LAYOUT--> */}
-        <Chat />
+        {selectedChat && <Chat />}
       </div>
     </div>
   );
