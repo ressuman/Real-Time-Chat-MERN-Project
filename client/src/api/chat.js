@@ -23,19 +23,19 @@ export const createNewChat = async (members) => {
 };
 
 // Clear unread message count
-// export const clearUnreadMessageCount = async (chatId) => {
-//   try {
-//     const response = await axiosInstance.post(
-//       "api/v1/chat/clear-unread-message",
-//       {
-//         chatId,
-//       }
-//     );
-//     return response.data;
-//   } catch (error) {
-//     handleApiError(error);
-//   }
-// };
+export const clearUnreadMessageCount = async (chatId) => {
+  try {
+    const response = await axiosInstance.post(
+      "api/v1/chat/clear-unread-message",
+      {
+        chatId,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+  }
+};
 
 // Centralized error handler
 const handleApiError = (error) => {

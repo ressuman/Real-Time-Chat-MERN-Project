@@ -6,11 +6,14 @@ import { hideLoader, showLoader } from "../../../redux/slice/loaderSlice";
 import { useEffect, useState } from "react";
 import moment from "moment";
 import { formatName } from "../../../utils/name";
+import { clearUnreadMessageCount } from "../../../api/chat";
 
 export default function Chat() {
-  const { selectedChat, user: currentUser } = useSelector(
-    (state) => state.userReducer
-  );
+  const {
+    selectedChat,
+    user: currentUser,
+    allChats,
+  } = useSelector((state) => state.userReducer);
 
   const dispatch = useDispatch();
 
@@ -96,6 +99,34 @@ export default function Chat() {
     }
   };
 
+  const clearUnreadMessages = async () => {
+    try {
+      // Emit socket event to clear unread messages
+      // socket.emit("clear-unread-messages", {
+      //   chatId: selectedChat._id,
+      //   members: selectedChat.members.map((m) => m._id),
+      // });
+
+      // API call to clear unread message count
+      dispatch(showLoader());
+      const response = await clearUnreadMessageCount(selectedChat._id);
+      dispatch(hideLoader());
+
+      if (response.success) {
+        // Update the allChats state with the new chat data
+        const updatedChats = allChats.map((chat) =>
+          chat._id === selectedChat._id ? { ...chat, ...response.data } : chat
+        );
+
+        //dispatch(setAllChats(updatedChats)); // Dispatch updated chats to the store
+      }
+    } catch (error) {
+      // Display error message if something goes wrong
+      dispatch(hideLoader());
+      toast.error(error.message || "Failed to clear unread messages.");
+    }
+  };
+
   const formatTime = (timestamp) => {
     if (!timestamp) {
       return "Invalid date"; // Handle cases where timestamp is undefined or null
@@ -111,16 +142,25 @@ export default function Chat() {
     const diff = now.diff(givenTime, "days");
 
     if (diff < 1) {
-      return `Today ${givenTime.format("hh:mm A")}`;
+      return `Today, ${givenTime.format("hh:mm A")}`;
     } else if (diff === 1) {
-      return `Yesterday ${givenTime.format("hh:mm A")}`;
+      return `Yesterday, ${givenTime.format("hh:mm A")}`;
     } else {
       return givenTime.format("MMM D, hh:mm A");
     }
   };
 
   useEffect(() => {
-    fetchAllMessages();
+    const initializeChat = async () => {
+      if (selectedChat) {
+        await fetchAllMessages(); // Ensure messages are fetched
+        if (selectedChat?.lastMessage?.sender !== currentUser._id) {
+          await clearUnreadMessages(); // Clear unread messages if applicable
+        }
+      }
+    };
+
+    initializeChat();
   }, [selectedChat]);
 
   return (
@@ -169,7 +209,14 @@ export default function Chat() {
                           : { float: "left" }
                       }
                     >
-                      {formatTime(message.createdAt)}
+                      {formatTime(message.createdAt)}{" "}
+                      {isCurrentUserSender && message.read && (
+                        <i
+                          className="fa fa-check-circle"
+                          aria-hidden="true"
+                          style={{ color: "#e74c3c" }}
+                        ></i>
+                      )}
                     </div>
                   </div>
                 </div>

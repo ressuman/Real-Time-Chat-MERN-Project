@@ -85,30 +85,48 @@ export default function UsersList({ searchKey }) {
   };
 
   const getLastMessageTimeStamp = (userId) => {
-    const chat = allChats.find((chat) =>
+    const chat = allChats?.find((chat) =>
       chat.members.some((member) => member._id === userId)
     );
 
-    if (!chat || !chat.lastMessage) {
+    if (!chat || !chat?.lastMessage) {
       return ""; // Return empty string if no chat or last message exists
     }
 
-    return moment(chat.lastMessage.createdAt).format("hh:mm A");
+    return moment(chat?.lastMessage?.createdAt).format("hh:mm A");
   };
 
   const getLastMessage = (userId) => {
-    const chat = allChats.find((chat) =>
+    const chat = allChats?.find((chat) =>
       chat.members.some((member) => member._id === userId)
     );
 
-    if (!chat || !chat.lastMessage) {
+    if (!chat || !chat?.lastMessage) {
       return ""; // Return empty string if no chat or last message exists
     }
 
-    const isSenderCurrentUser = chat.lastMessage.sender === currentUser._id;
+    const isSenderCurrentUser = chat?.lastMessage?.sender === currentUser._id;
     const msgPrefix = isSenderCurrentUser ? "You: " : "";
-    const messageText = chat.lastMessage.text || "[Media]"; // Fallback for non-text messages
+    const messageText = chat?.lastMessage?.text || "[Media]"; // Fallback for non-text messages
     return msgPrefix + messageText.substring(0, 25); // Limit to 25 characters
+  };
+
+  const getUnreadMessageCount = (userId) => {
+    const chat = allChats?.find((chat) =>
+      chat.members.some((member) => member._id === userId)
+    );
+
+    if (
+      chat &&
+      chat.unreadMessageCount > 0 &&
+      chat.lastMessage?.sender !== currentUser._id
+    ) {
+      return (
+        <div className="unread-message-counter">{chat.unreadMessageCount}</div>
+      );
+    }
+
+    return null; // Use null for better React rendering logic
   };
 
   const filteredUsers = searchKey.trim()
@@ -176,8 +194,12 @@ export default function UsersList({ searchKey }) {
                 {getLastMessage(user._id) || user.email}
               </div>
             </div>
-            <div className="last-message-timestamp">
-              {getLastMessageTimeStamp(user._id)}
+
+            <div>
+              {getUnreadMessageCount(user._id)}
+              <div className="last-message-timestamp">
+                {getLastMessageTimeStamp(user._id)}
+              </div>
             </div>
 
             {/* Show Start Chat button only if chat does not exist */}

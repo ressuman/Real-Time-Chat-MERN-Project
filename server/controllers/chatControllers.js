@@ -1,4 +1,6 @@
 const Chat = require("../models/chat");
+const Message = require("../models/message");
+const mongoose = require("mongoose");
 
 exports.createNewChat = async (req, res) => {
   try {
@@ -87,7 +89,64 @@ exports.getAllChats = async (req, res) => {
   }
 };
 
-// exports.clearUnreadMessages = async (req, res) => {
-//   try {
-//   } catch (error) {}
-// };
+exports.clearUnreadMessages = async (req, res) => {
+  try {
+    const { chatId, userId } = req.body;
+
+    // 1. Validate chatId
+    if (!mongoose.Types.ObjectId.isValid(chatId)) {
+      return res.status(400).send({
+        message: "Invalid chat ID provided.",
+        success: false,
+      });
+    }
+
+    // 2. Fetch the chat and validate existence
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res.status(404).send({
+        message: "No chat found with the given chat ID.",
+        success: false,
+      });
+    }
+
+    // 3. Ensure the user is a participant of the chat
+    const isUserInChat = chat.members.some(
+      (memberId) => memberId.toString() === userId
+    );
+    if (!isUserInChat) {
+      return res.status(403).send({
+        message:
+          "User is not authorized to clear unread messages for this chat.",
+        success: false,
+      });
+    }
+
+    // 4. Update the unread message count to 0 in the chat collection
+    const updatedChat = await Chat.findByIdAndUpdate(
+      chatId,
+      { unreadMessageCount: 0 },
+      { new: true }
+    )
+      .populate("members")
+      .populate("lastMessage");
+
+    // 5. Update all unread messages in the message collection for the chat
+    const updatedMessages = await Message.updateMany(
+      { chatId: chatId, read: false },
+      { read: true }
+    );
+
+    res.status(200).send({
+      message: "Unread messages cleared successfully.",
+      success: true,
+      data: updatedChat,
+      updatedMessagesCount: updatedMessages.modifiedCount, // Optional, tracks updated messages
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: `Server error: ${error.message}`,
+      success: false,
+    });
+  }
+};
