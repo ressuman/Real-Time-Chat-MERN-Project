@@ -40,3 +40,34 @@ export const getAllUsers = async () => {
     throw new Error("An unexpected error occurred.");
   }
 };
+
+export const uploadProfilePic = async (image, userId) => {
+  try {
+    const response = await axiosInstance.post(
+      `api/v1/user/upload-profile-pic`,
+      {
+        image,
+        userId,
+      }
+    );
+
+    if (response?.data?.success) {
+      return response.data; // Return the success response
+    } else {
+      throw new Error(
+        response?.data?.message || "Failed to upload profile picture."
+      );
+    }
+  } catch (error) {
+    console.error("Error uploading profile picture:", error.message);
+
+    // Provide a consistent error format
+    return {
+      success: false,
+      message:
+        error?.response?.data?.message ||
+        error.message ||
+        "An error occurred while uploading the profile picture.",
+    };
+  }
+};

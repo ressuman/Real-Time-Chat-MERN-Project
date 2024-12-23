@@ -13,6 +13,6 @@ router.get("/get-logged-user", authMiddleware, getLoggedUser);
 
 router.get("/get-all-users", authMiddleware, getAllUsers);
 
-// router.post("/upload-profile-pic", authMiddleware, uploadProfilePic);
+router.post("/upload-profile-pic", authMiddleware, uploadProfilePic);
 
 module.exports = router;
