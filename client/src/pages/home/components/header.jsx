@@ -67,7 +67,10 @@ export default function Header() {
           </div>
         )} */}
         <div className="logged-user-name">{getFullname()}</div>
-        <div className="logged-user-profile-pic">
+        <div
+          className="logged-user-profile-pic"
+          onClick={() => navigate("/profile")}
+        >
           {/* {getFullname()} */}
           {getInitials()}
         </div>

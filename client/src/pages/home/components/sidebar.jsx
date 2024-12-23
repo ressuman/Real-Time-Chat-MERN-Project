@@ -2,7 +2,7 @@ import { useState } from "react";
 import Search from "./search";
 import UsersList from "./usersList";
 
-export default function Sidebar() {
+export default function Sidebar({ socket, onlineUser }) {
   const [searchKey, setSearchKey] = useState("");
 
   return (
@@ -10,7 +10,11 @@ export default function Sidebar() {
       {/* <!--SEARCH USER--> */}
       <Search searchKey={searchKey} setSearchKey={setSearchKey} />
       {/* <!--USER LIST--> */}
-      <UsersList searchKey={searchKey} />
+      <UsersList
+        searchKey={searchKey}
+        socket={socket}
+        onlineUser={onlineUser}
+      />
     </div>
   );
 }

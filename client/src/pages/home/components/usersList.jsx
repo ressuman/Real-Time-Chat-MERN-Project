@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import { setAllChats, setSelectedChat } from "../../../redux/slice/usersSlice";
 import moment from "moment";
 import { formatName } from "../../../utils/name";
+import store from "../../../redux/store/store";
+import { useEffect } from "react";
 
-export default function UsersList({ searchKey }) {
+export default function UsersList({ searchKey, socket, onlineUser }) {
   const {
     allUsers,
     allChats,
@@ -129,6 +131,46 @@ export default function UsersList({ searchKey }) {
     return null; // Use null for better React rendering logic
   };
 
+  useEffect(() => {
+    const handleSetMessageCount = (message) => {
+      const state = store.getState();
+      const selectedChat = state.userReducer.selectedChat;
+      let allChats = [...state.userReducer.allChats]; // Make a copy to avoid mutating state directly
+
+      if (selectedChat?._id !== message.chatId) {
+        // Update unread message count and lastMessage for the relevant chat
+        allChats = allChats.map((chat) =>
+          chat._id === message.chatId
+            ? {
+                ...chat,
+                unreadMessageCount: (chat?.unreadMessageCount || 0) + 1,
+                lastMessage: message,
+              }
+            : chat
+        );
+      }
+
+      // Reorganize chats: bring the latest chat to the top
+      const latestChat = allChats.find((chat) => chat._id === message.chatId);
+      if (latestChat) {
+        const otherChats = allChats.filter(
+          (chat) => chat._id !== message.chatId
+        );
+        allChats = [latestChat, ...otherChats];
+      }
+
+      dispatch(setAllChats(allChats)); // Update Redux state
+    };
+
+    //socket.on("set-message-count", handleSetMessageCount);
+    socket.on("receive-message", handleSetMessageCount);
+    // Cleanup the listener on component unmount
+    return () => {
+      //socket.off("set-message-count", handleSetMessageCount);
+      socket.off("receive-message", handleSetMessageCount);
+    };
+  }, [dispatch]);
+
   const filteredUsers = searchKey.trim()
     ? allUsers.filter((user) => {
         // Check if the search key matches either firstName or lastName
@@ -173,6 +215,11 @@ export default function UsersList({ searchKey }) {
                 src={user.profilePic}
                 alt="Profile Pic"
                 className="user-profile-image"
+                style={
+                  onlineUser.includes(user._id)
+                    ? { border: "#82e0aa 3px solid" }
+                    : {}
+                }
               />
             )}
             {!user.profilePic && (
@@ -181,6 +228,11 @@ export default function UsersList({ searchKey }) {
                   isSelectedChat(user)
                     ? "user-selected-avatar"
                     : "user-default-avatar"
+                }
+                style={
+                  onlineUser.includes(user._id)
+                    ? { border: "#82e0aa 3px solid" }
+                    : {}
                 }
               >
                 {user.firstName.charAt(0).toUpperCase() +

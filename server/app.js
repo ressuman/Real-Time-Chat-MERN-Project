@@ -34,9 +34,74 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/message", messageRoutes);
 
-// Testing socket connection
+const onlineUser = []; // List to track online users
+
+// Socket.io event handlers
 io.on("connection", (socket) => {
-  console.log("A user connected with socket ID: " + socket.id);
+  console.log("New client connected:", socket.id);
+
+  // User joins a room
+  socket.on("join-room", (userId) => {
+    socket.join(userId);
+    console.log(`User ${userId} joined room ${userId}`);
+  });
+
+  // Handle user login and add to the online user list
+  socket.on("user-login", (userId) => {
+    if (!onlineUser.includes(userId)) {
+      onlineUser.push(userId);
+    }
+
+    console.log(`User logged in: ${userId}`);
+    console.log("Online Users:", onlineUser);
+
+    // Broadcast updated online users to all clients
+    io.emit("online-users", onlineUser);
+  });
+
+  // Handle message sending
+  socket.on("send-message", (message) => {
+    io.to(message.members[0])
+      .to(message.members[1])
+      .emit("receive-message", message);
+
+    // io.to(message.members[0])
+    //   .to(message.members[1])
+    //   .emit("set-message-count", message);
+  });
+
+  // Clear unread messages
+  socket.on("clear-unread-messages", (data) => {
+    io.to(data.members[0])
+      .to(data.members[1])
+      .emit("message-count-cleared", data);
+  });
+
+  // User typing event
+  socket.on("user-typing", (data) => {
+    io.to(data.members[0]).to(data.members[1]).emit("started-typing", data);
+  });
+
+  // Handle user logout or manual offline event
+  // socket.on("user-offline", (userId) => {
+  //   const index = onlineUser.indexOf(userId);
+  //   if (index > -1) {
+  //     onlineUser.splice(index, 1);
+  //   }
+
+  //   console.log(`User went offline: ${userId}`);
+  //   console.log("Updated Online Users:", onlineUser);
+
+  //   // Notify all clients about updated online users
+  //   io.emit("online-users-updated", onlineUser);
+  // });
+
+  // Handle socket disconnect
+  // socket.on("disconnect", () => {
+  //   console.log(`Client disconnected: ${socket.id}`);
+  //   // Clean up the user from the onlineUser list
+  //   // This assumes a way to track userId related to the socket
+  // });
 });
 
 module.exports = server;
