@@ -41,13 +41,16 @@ export const getAllUsers = async () => {
   }
 };
 
-export const uploadProfilePic = async (image, userId) => {
+export const uploadProfilePic = async (
+  image
+  //userId
+) => {
   try {
     const response = await axiosInstance.post(
       `api/v1/user/upload-profile-pic`,
       {
         image,
-        userId,
+        //userId,
       }
     );
 

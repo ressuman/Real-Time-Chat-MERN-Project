@@ -32,23 +32,23 @@ export default function Chat({ socket }) {
     ? selectedChat.members.find((user) => user._id !== currentUser._id)
     : null;
 
-  const sendMessage = async () => {
+  const sendMessage = async (image) => {
     if (!selectedChat || !currentUser || !currentUser._id) {
       toast.error("Unable to send the message. Please try again later.");
       return;
     }
 
-    // if (!message.trim() && !image) {
-    //   toast.error("Cannot send an empty message.");
-    //   return;
-    // }
+    if (!message.trim() && !image) {
+      toast.error("Cannot send an empty message.");
+      return;
+    }
 
     try {
       const newMessage = {
         chatId: selectedChat._id,
         sender: currentUser._id,
         text: message.trim(),
-        //image: image || null, // Set image to null if not provided
+        image: image || null, // Set image to null if not provided
       };
 
       // Emit message through socket
@@ -151,6 +151,31 @@ export default function Chat({ socket }) {
     } else {
       return givenTime.format("MMM D, hh:mm A");
     }
+  };
+
+  const sendImage = async (e) => {
+    const file = e.target.files[0];
+
+    if (!file) {
+      console.error("No file selected");
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      if (reader.result) {
+        sendMessage(reader.result); // Send the image's base64 data
+      } else {
+        console.error("Error reading file");
+      }
+    };
+
+    reader.onerror = () => {
+      console.error("Error occurred while reading the file");
+    };
+
+    reader.readAsDataURL(file);
   };
 
   // useEffect(() => {
@@ -320,7 +345,17 @@ export default function Chat({ socket }) {
                           : "received-message"
                       }
                     >
-                      {message.text}
+                      <div> {message.text}</div>
+                      <div>
+                        {message.image && (
+                          <img
+                            src={message.image}
+                            alt="image"
+                            height="120"
+                            width="120"
+                          ></img>
+                        )}
+                      </div>
                     </div>
                     <div
                       className="message-timestamp"
@@ -351,15 +386,15 @@ export default function Chat({ socket }) {
 
           {showEmojiPicker && (
             <div
-            // style={{
-            //   width: "100%",
-            //   display: "flex",
-            //   padding: "0px 20px",
-            //   justifyContent: "right",
-            // }}
+              style={{
+                width: "100%",
+                display: "flex",
+                padding: "0px 20px",
+                justifyContent: "right",
+              }}
             >
               <EmojiPicker
-                //style={{ width: "300px", height: "400px" }}
+                style={{ width: "300px", height: "400px" }}
                 onEmojiClick={(e) => setMessage(message + e.emoji)}
               />
             </div>
@@ -382,6 +417,16 @@ export default function Chat({ socket }) {
               }}
             />
 
+            <label htmlFor="file">
+              <i className="fa fa-picture-o send-image-btn"></i>
+              <input
+                type="file"
+                id="file"
+                style={{ display: "none" }}
+                accept="image/jpg,image/png,image/jpeg,image/gif,image/webp"
+                onChange={sendImage}
+              ></input>
+            </label>
             <button
               className="fa fa-smile-o send-emoji-btn"
               aria-hidden="true"

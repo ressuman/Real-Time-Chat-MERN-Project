@@ -236,6 +236,7 @@ i {
   text-align: center;
   vertical-align: middle;
   line-height: 40px;
+  cursor: pointer;
 }
 
 /*******************************************************
@@ -262,7 +263,6 @@ i {
   border: none;
   border-radius: 20px;
   color: #28282b;
-  border: #ddd 1px solid;
 }
 
 .user-search-btn {
@@ -294,12 +294,10 @@ i {
 .filter-user-display {
   display: flex;
   flex-wrap: wrap;
-  /* align-items: center; */
 }
 
 .filter-user-details {
   width: 62.5%;
-  /* flex: 1; */
 }
 
 .user-display-name {
@@ -423,7 +421,7 @@ i {
   border: none;
   border-radius: 5px;
   color: #28282b;
-  border: #ddd 1px solid;
+  /* border: #ddd 1px solid; */
 }
 
 .send-message-btn {
@@ -440,6 +438,17 @@ i {
 .send-emoji-btn {
   position: absolute;
   right: 50px;
+  font-size: 25px;
+  color: #e74c3c;
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  margin-top: 5px;
+}
+
+.send-image-btn {
+  position: absolute;
+  right: 80px;
   font-size: 25px;
   color: #e74c3c;
   cursor: pointer;
@@ -538,12 +547,51 @@ i {
 
 .profile-page-container {
   display: flex;
-  width: 80%;
+  max-width: 80%;
   color: #28282b;
   margin: 100px auto;
   padding: 20px 20px;
   border-radius: 10px;
   box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.back-button-container {
+  max-width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 100px;
+  margin-left: 100px;
+}
+
+.back-button {
+  align-self: flex-start;
+  margin-bottom: 20px;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #e74c3c;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+}
+
+.back-button:hover {
+  background-color: #1d2671;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.back-button:active {
+  transform: translateX(0);
+  background-color: #004080;
+}
+
+.back-button i {
+  margin-right: 8px;
 }
 
 .profile-pic-container {
@@ -569,6 +617,10 @@ i {
   text-align: center;
   vertical-align: middle;
   line-height: 240px;
+  display: flex;
+  justify-content: center;
+  transition: all 0.3s ease-in-out;
+  align-items: center;
 }
 
 .user-profile-name {
@@ -579,6 +631,67 @@ i {
 
 .select-profile-pic-container {
   padding: 30px 0px;
+}
+
+.user-profile-pic-upload:hover {
+  border-color: #007bff;
+  transform: scale(1.05);
+}
+
+.user-default-profile-avatar {
+  background-color: #e0e0e0;
+}
+
+.user-profile-name h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: bold;
+  color: #444;
+}
+
+.user-profile-info {
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.user-profile-info b {
+  color: #007bff;
+}
+
+.select-profile-pic-container label:hover {
+  background-color: #0056b3;
+}
+
+.select-profile-pic-container label:active {
+  background-color: #004080;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1000px) {
+  .profile-page-container {
+    padding: 15px;
+  }
+
+  .profile-pic-container {
+    margin-bottom: 20px;
+  }
+
+  .profile-info-container {
+    padding: 15px;
+  }
+
+  .user-profile-pic-upload,
+  .user-default-profile-avatar {
+    width: 170px;
+    height: 170px;
+    font-size: 60px;
+  }
+
+  .upload-image-btn,
+  .select-profile-pic-container label {
+    font-size: 14px;
+    padding: 10px 15px;
+  }
 }
 
 /* file upload button */

@@ -50,7 +50,8 @@ export default function Header() {
         Quik Realtime Chat
       </div>
       <div className="app-user-profile">
-        {/* {user?.profilePic && (
+        <div className="logged-user-name">{getFullname()}</div>
+        {user?.profilePic && (
           <img
             src={user?.profilePic}
             alt="profile-pic"
@@ -59,21 +60,19 @@ export default function Header() {
           ></img>
         )}
         {!user?.profilePic && (
-          <div
+          <button
             className="logged-user-profile-pic"
             onClick={() => navigate("/profile")}
+            tabIndex="0"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                navigate("/profile");
+              }
+            }}
           >
             {getInitials()}
-          </div>
-        )} */}
-        <div className="logged-user-name">{getFullname()}</div>
-        <div
-          className="logged-user-profile-pic"
-          onClick={() => navigate("/profile")}
-        >
-          {/* {getFullname()} */}
-          {getInitials()}
-        </div>
+          </button>
+        )}
         {/* <button
           type="button"
           className="logout-button"
