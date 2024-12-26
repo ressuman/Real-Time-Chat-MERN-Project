@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-export default function Header() {
+export default function Header({ socket }) {
   const { user } = useSelector((state) => state.userReducer);
 
   const navigate = useNavigate();
@@ -43,6 +43,35 @@ export default function Header() {
   //   return f + l;
   // }
 
+  const logout = () => {
+    try {
+      // Remove token from local storage
+      if (localStorage.getItem("token")) {
+        localStorage.removeItem("token");
+      }
+
+      // Notify server about the user going offline
+      if (socket && user?._id) {
+        socket.emit("user-offline", user._id, (ack) => {
+          if (ack?.success) {
+            console.log("User marked offline successfully");
+          } else {
+            console.error("Failed to mark user offline:", ack?.error);
+          }
+        });
+      }
+
+      // Navigate to login page
+      if (navigate) {
+        navigate("/login");
+      } else {
+        console.error("Navigation function is not defined.");
+      }
+    } catch (error) {
+      console.error("Error during logout:", error.message);
+    }
+  };
+
   return (
     <div className="app-header">
       <div className="app-logo">
@@ -50,7 +79,6 @@ export default function Header() {
         Quik Realtime Chat
       </div>
       <div className="app-user-profile">
-        <div className="logged-user-name">{getFullname()}</div>
         {user?.profilePic && (
           <img
             src={user?.profilePic}
@@ -73,14 +101,16 @@ export default function Header() {
             {getInitials()}
           </button>
         )}
-        {/* <button
+        <div className="logged-user-name">{getFullname()}</div>
+        <button
           type="button"
           className="logout-button"
-          //onClick={logout}
+          onClick={logout}
+          aria-label="Logout"
         >
-          ghhg
           <i className="fa fa-power-off"></i>
-        </button> */}
+          <span className="sr-only">Logout</span>
+        </button>
       </div>
     </div>
   );

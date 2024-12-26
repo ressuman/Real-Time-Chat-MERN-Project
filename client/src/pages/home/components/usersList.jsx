@@ -162,12 +162,11 @@ export default function UsersList({ searchKey, socket, onlineUser }) {
       dispatch(setAllChats(allChats)); // Update Redux state
     };
 
-    //socket.on("set-message-count", handleSetMessageCount);
-    socket.on("receive-message", handleSetMessageCount);
+    socket.on("set-message-count", handleSetMessageCount);
+
     // Cleanup the listener on component unmount
     return () => {
-      //socket.off("set-message-count", handleSetMessageCount);
-      socket.off("receive-message", handleSetMessageCount);
+      socket.off("set-message-count", handleSetMessageCount);
     };
   }, [dispatch]);
 

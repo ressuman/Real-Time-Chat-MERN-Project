@@ -66,9 +66,9 @@ io.on("connection", (socket) => {
       .to(message.members[1])
       .emit("receive-message", message);
 
-    // io.to(message.members[0])
-    //   .to(message.members[1])
-    //   .emit("set-message-count", message);
+    io.to(message.members[0])
+      .to(message.members[1])
+      .emit("set-message-count", message);
   });
 
   // Clear unread messages
@@ -84,25 +84,25 @@ io.on("connection", (socket) => {
   });
 
   // Handle user logout or manual offline event
-  // socket.on("user-offline", (userId) => {
-  //   const index = onlineUser.indexOf(userId);
-  //   if (index > -1) {
-  //     onlineUser.splice(index, 1);
-  //   }
+  socket.on("user-offline", (userId) => {
+    const index = onlineUser.indexOf(userId);
+    if (index > -1) {
+      onlineUser.splice(index, 1);
+    }
 
-  //   console.log(`User went offline: ${userId}`);
-  //   console.log("Updated Online Users:", onlineUser);
+    console.log(`User went offline: ${userId}`);
+    console.log("Updated Online Users:", onlineUser);
 
-  //   // Notify all clients about updated online users
-  //   io.emit("online-users-updated", onlineUser);
-  // });
+    // Notify all clients about updated online users
+    io.emit("online-users-updated", onlineUser);
+  });
 
   // Handle socket disconnect
-  // socket.on("disconnect", () => {
-  //   console.log(`Client disconnected: ${socket.id}`);
-  //   // Clean up the user from the onlineUser list
-  //   // This assumes a way to track userId related to the socket
-  // });
+  socket.on("disconnect", () => {
+    console.log(`Client disconnected: ${socket.id}`);
+    // Clean up the user from the onlineUser list
+    // This assumes a way to track userId related to the socket
+  });
 });
 
 module.exports = server;

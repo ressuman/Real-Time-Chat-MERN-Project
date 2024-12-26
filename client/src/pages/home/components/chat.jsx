@@ -26,6 +26,7 @@ export default function Chat({ socket }) {
   const [allMessages, setAllMessages] = useState([]);
   const [isTyping, setIsTyping] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [typingData, setTypingData] = useState(null);
 
   // Correctly find the other user in the chat
   const selectedUser = selectedChat
@@ -178,39 +179,8 @@ export default function Chat({ socket }) {
     reader.readAsDataURL(file);
   };
 
-  // useEffect(() => {
-  //   const initializeChat = async () => {
-  //     if (selectedChat) {
-  //       await fetchAllMessages(); // Ensure messages are fetched
-  //       if (selectedChat?.lastMessage?.sender !== currentUser._id) {
-  //         await clearUnreadMessages(); // Clear unread messages if applicable
-  //       }
-  //     }
-  //   };
-
-  //   socket.off("receive-message").on("receive-message", (data) => {
-  //     setAllMessages((prevMessages) => [...prevMessages, data]);
-  //   });
-
-  //   initializeChat();
-  // }, [selectedChat]);
-
-  // useEffect(() => {
-  //   const handleReceiveMessage = (data) => {
-  //     setAllMessages((prevMessages) => [...prevMessages, data]);
-  //   };
-
-  //   // Register event listener once
-  //   socket.on("receive-message", handleReceiveMessage);
-
-  //   // Cleanup listener to prevent duplicates
-  //   return () => {
-  //     socket.off("receive-message", handleReceiveMessage);
-  //   };
-  // }, [socket]);
-
   useEffect(() => {
-    //let typingTimeoutRef = null;
+    let typingTimeoutRef = null;
 
     const initializeChat = async () => {
       if (!selectedChat) return;
@@ -262,20 +232,16 @@ export default function Chat({ socket }) {
         latestSelectedChat._id === data.chatId &&
         data.sender !== currentUser._id
       ) {
-        //setTypingData(data);
+        setTypingData(data);
         setIsTyping(true);
 
-        // // Clear the previous timeout if it exists
-        // if (typingTimeoutRef) {
-        //   clearTimeout(typingTimeoutRef);
-        // }
+        // Clear the previous timeout if it exists
+        if (typingTimeoutRef) {
+          clearTimeout(typingTimeoutRef);
+        }
 
-        // // Reset typing indicator after 2 seconds
-        // typingTimeoutRef = setTimeout(() => {
-        //   setIsTyping(false);
-        // }, 2000);
-
-        setTimeout(() => {
+        // Reset typing indicator after 2 seconds
+        typingTimeoutRef = setTimeout(() => {
           setIsTyping(false);
         }, 2000);
       }
@@ -291,17 +257,14 @@ export default function Chat({ socket }) {
 
     // Cleanup listeners and timeout on unmount
     return () => {
-      //socket.off("receive-message", handleReceiveMessage);
-      //socket.off("message-count-cleared", handleMessageCountCleared);
-      //socket.off("started-typing", handleStartedTyping);
-      // if (typingTimeoutRef) {
-      //   clearTimeout(typingTimeoutRef);
-      // }
+      socket.off("receive-message", handleReceiveMessage);
+      socket.off("message-count-cleared", handleMessageCountCleared);
+      socket.off("started-typing", handleStartedTyping);
+      if (typingTimeoutRef) {
+        clearTimeout(typingTimeoutRef);
+      }
     };
-  }, [
-    selectedChat,
-    // currentUser, dispatch
-  ]);
+  }, [selectedChat, currentUser, dispatch]);
 
   useEffect(() => {
     if (chatAreaRef.current) {
@@ -350,7 +313,7 @@ export default function Chat({ socket }) {
                         {message.image && (
                           <img
                             src={message.image}
-                            alt="image"
+                            alt="gallery"
                             height="120"
                             width="120"
                           ></img>
@@ -380,7 +343,10 @@ export default function Chat({ socket }) {
             })}
 
             <div className="typing-indicator">
-              {isTyping && <i>typing...</i>}
+              {isTyping &&
+                selectedChat?.members?.some(
+                  (member) => member._id === typingData?.sender
+                ) && <i>typing...</i>}
             </div>
           </div>
 
@@ -417,7 +383,7 @@ export default function Chat({ socket }) {
               }}
             />
 
-            <label htmlFor="file">
+            <label htmlFor="file" aria-label="Upload Image">
               <i className="fa fa-picture-o send-image-btn"></i>
               <input
                 type="file"
@@ -429,17 +395,19 @@ export default function Chat({ socket }) {
             </label>
             <button
               className="fa fa-smile-o send-emoji-btn"
-              aria-hidden="true"
               onClick={() => {
                 setShowEmojiPicker(!showEmojiPicker);
               }}
+              aria-label="Toggle Emoji Picker"
             ></button>
             <button
               type="submit"
               className="fa fa-paper-plane send-message-btn"
-              aria-hidden="true"
-              onClick={sendMessage}
-            ></button>
+              onClick={() => sendMessage("")}
+              aria-label="Send Message"
+            >
+              <span className="sr-only">Send Message</span>
+            </button>
           </div>
         </div>
       )}

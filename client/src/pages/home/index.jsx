@@ -26,19 +26,19 @@ export default function Home() {
       };
 
       socket.on("online-users", handleOnlineUsers);
-      //socket.on("online-users-updated", handleOnlineUsers);
+      socket.on("online-users-updated", handleOnlineUsers);
 
       // Cleanup on component unmount or user change
-      // return () => {
-      //   socket.off("online-users", handleOnlineUsers);
-      //   socket.off("online-users-updated", handleOnlineUsers);
-      // };
+      return () => {
+        socket.off("online-users", handleOnlineUsers);
+        socket.off("online-users-updated", handleOnlineUsers);
+      };
     }
   }, [currentUser]);
 
   return (
     <div className="home-page">
-      <Header />
+      <Header socket={socket} />
       <div className="main-content">
         {/* <!--SIDEBAR LAYOUT--> */}
         <Sidebar socket={socket} onlineUser={onlineUser} />
