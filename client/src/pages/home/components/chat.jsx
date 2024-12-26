@@ -21,6 +21,7 @@ export default function Chat({ socket }) {
   const dispatch = useDispatch();
 
   const chatAreaRef = useRef(null);
+  const textareaRef = useRef(null);
 
   const [message, setMessage] = useState("");
   const [allMessages, setAllMessages] = useState([]);
@@ -66,6 +67,9 @@ export default function Chat({ socket }) {
       if (response.success) {
         setMessage(""); // Clear the input field
         setShowEmojiPicker(false); // Close the emoji picker
+        if (textareaRef.current) {
+          textareaRef.current.style.height = "auto";
+        }
         toast.success("Message sent successfully!");
       } else {
         toast.error(response.message || "Failed to send the message.");
@@ -122,7 +126,7 @@ export default function Chat({ socket }) {
           chat._id === selectedChat._id ? { ...chat, ...response.data } : chat
         );
 
-        //dispatch(setAllChats(updatedChats)); // Dispatch updated chats to the store
+        dispatch(setAllChats(updatedChats)); // Dispatch updated chats to the store
       }
     } catch (error) {
       // Display error message if something goes wrong
@@ -368,7 +372,7 @@ export default function Chat({ socket }) {
 
           {/* <!--SEND MESSAGE--> */}
           <div className="send-message-div">
-            <input
+            {/* <input
               type="text"
               className="send-message-input"
               placeholder="Type a message"
@@ -381,6 +385,32 @@ export default function Chat({ socket }) {
                   sender: currentUser._id,
                 });
               }}
+            /> */}
+            <textarea
+              className="send-message-input"
+              placeholder="Type a message"
+              value={message}
+              onChange={(e) => {
+                setMessage(e.target.value);
+                socket.emit("user-typing", {
+                  chatId: selectedChat._id,
+                  members: selectedChat.members.map((member) => member._id),
+                  sender: currentUser._id,
+                });
+              }}
+              rows="1"
+              onInput={(e) => {
+                const target = e.target;
+                target.style.height = "auto";
+                if (target.scrollHeight <= 150) {
+                  target.style.height = `${target.scrollHeight}px`;
+                  target.style.overflowY = "hidden";
+                } else {
+                  target.style.height = "150px";
+                  target.style.overflowY = "auto";
+                }
+              }}
+              ref={textareaRef}
             />
 
             <label htmlFor="file" aria-label="Upload Image">
