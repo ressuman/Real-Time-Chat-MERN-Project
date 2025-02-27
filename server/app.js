@@ -17,10 +17,17 @@ const server = require("http").createServer(app);
 
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: "https://ressuman-real-time-chat-mern-client-app.vercel.app/",
     methods: ["GET", "POST"],
   },
 });
+
+// const io = require("socket.io")(server, {
+//   cors: {
+//     origin: "http://localhost:5173",
+//     methods: ["GET", "POST"],
+//   },
+// });
 
 app.get("/api", (req, res) => {
   res.json({
