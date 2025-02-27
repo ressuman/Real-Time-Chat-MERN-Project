@@ -1,33 +1,48 @@
 const express = require("express");
 const cors = require("cors");
+const dotenv = require("dotenv");
+
+dotenv.config({ path: "./config.env" });
 
 const app = express();
 
+// Import routes
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 
-app.use(cors());
+//app.use(cors());
+// CORS Configuration
+const allowedOrigins = [process.env.CLIENT_BASE_URL]; // Add more origins if needed
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true, // Allow cookies/sessions if needed
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 const server = require("http").createServer(app);
 
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "https://ressuman-real-time-chat-mern-client-app.vercel.app/",
-    methods: ["GET", "POST"],
-  },
-});
-
 // const io = require("socket.io")(server, {
 //   cors: {
-//     origin: "http://localhost:5173",
+//     origin: "https://ressuman-real-time-chat-mern-client-app.vercel.app/",
 //     methods: ["GET", "POST"],
 //   },
 // });
+
+const io = require("socket.io")(server, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+  },
+});
 
 app.get("/api", (req, res) => {
   res.json({
@@ -37,6 +52,7 @@ app.get("/api", (req, res) => {
   });
 });
 
+// Routes
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);

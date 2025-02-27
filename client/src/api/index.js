@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const axiosInstance = axios.create();
+export const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_REACT_SERVER_BASE_URL, // Use env variable
+});
 
 axiosInstance.interceptors.request.use(
   (config) => {

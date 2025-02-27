@@ -7,13 +7,13 @@ import process from "node:process";
 export default defineConfig(({ mode }) => {
   // Load env file based on `mode` in the current working directory.
   const env = loadEnv(mode, process.cwd(), "");
-  dotenv.config();
+  dotenv.config({ path: ".env" });
   return {
     plugins: [react()],
     server: {
       proxy: {
         "/api": {
-          target: env.SERVER_BASE_URL,
+          target: env.VITE_REACT_SERVER_BASE_URL,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, "/api"),
         },

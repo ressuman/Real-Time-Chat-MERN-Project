@@ -1,7 +1,5 @@
 import { axiosInstance } from "./index";
 
-//const url = "https://quick-chat-server-8t9c.onrender.com";
-
 // Sign up a new user
 export const signupUser = async (user) => {
   try {
