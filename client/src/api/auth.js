@@ -21,7 +21,11 @@ export const signupUser = async (user) => {
       request: error.request,
     });
 
-    throw new Error(error.response?.data?.message || "Signup failed"); // Throw readable error
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Network error. Please check your connection."
+    ); // Throw readable error
   }
 };
 
@@ -48,6 +52,10 @@ export const loginUser = async (user) => {
       request: error.request,
     });
 
-    throw new Error(error.response?.data?.message || "Login failed"); // Throw readable error
+    throw new Error(
+      error.response?.data?.message ||
+        error.message ||
+        "Network error. Please check your connection."
+    ); // Throw readable error
   }
 };

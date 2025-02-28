@@ -45,7 +45,7 @@ const io = require("socket.io")(server, {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
-    transports: ["websocket", "polling"], // Add this
+    transports: ["websocket"], // Add this
   },
 });
 

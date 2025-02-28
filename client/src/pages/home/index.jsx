@@ -12,7 +12,7 @@ const socket = io(
     "https://ressuman-real-time-chat-mern-server-app.vercel.app",
   {
     withCredentials: true,
-    transports: ["websocket", "polling"], // Force WebSocket
+    transports: ["websocket"], // Force WebSocket
   }
 );
 
