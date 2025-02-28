@@ -5,7 +5,16 @@ import Sidebar from "./components/sidebar";
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 
-const socket = io("http://localhost:4292");
+//const socket = io("http://localhost:4292");
+
+const socket = io(
+  import.meta.env.VITE_REACT_SERVER_BASE_URL ||
+    "https://ressuman-real-time-chat-mern-server-app.vercel.app",
+  {
+    withCredentials: true,
+    transports: ["websocket", "polling"], // Force WebSocket
+  }
+);
 
 export default function Home() {
   const { selectedChat, user: currentUser } = useSelector(

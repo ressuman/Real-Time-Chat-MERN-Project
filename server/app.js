@@ -63,6 +63,11 @@ app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/chat", chatRoutes);
 app.use("/api/v1/message", messageRoutes);
 
+io.engine.on("initial_headers", (headers) => {
+  headers["Access-Control-Allow-Origin"] = process.env.CLIENT_BASE_URL;
+  headers["Access-Control-Allow-Credentials"] = "true";
+});
+
 const onlineUser = []; // List to track online users
 
 // Socket.io event handlers
