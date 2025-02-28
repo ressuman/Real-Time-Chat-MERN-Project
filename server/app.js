@@ -15,8 +15,8 @@ const messageRoutes = require("./routes/messageRoutes");
 //app.use(cors());
 // CORS Configuration
 const allowedOrigins = [
-  process.env.CLIENT_BASE_URL ||
-    "https://ressuman-real-time-chat-mern-client-app.vercel.app",
+  process.env.CLIENT_BASE_URL,
+  "https://ressuman-real-time-chat-mern-client-app.vercel.app",
 ]; // Add more origins if needed
 
 app.use(
@@ -45,6 +45,7 @@ const io = require("socket.io")(server, {
     origin: allowedOrigins,
     methods: ["GET", "POST"],
     credentials: true,
+    transports: ["websocket", "polling"], // Add this
   },
 });
 
