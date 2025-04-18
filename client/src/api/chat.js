@@ -3,7 +3,7 @@ import { axiosInstance } from "./index";
 // Get all chats
 export const getAllChats = async () => {
   try {
-    const response = await axiosInstance.get("api/v1/chat/get-all-chats");
+    const response = await axiosInstance.get("/api/v1/chat/get-all-chats");
     return response.data; // Adjust response structure if needed
   } catch (error) {
     handleApiError(error);
@@ -13,7 +13,7 @@ export const getAllChats = async () => {
 // Create a new chat
 export const createNewChat = async (members) => {
   try {
-    const response = await axiosInstance.post("api/v1/chat/create-new-chat", {
+    const response = await axiosInstance.post("/api/v1/chat/create-new-chat", {
       members,
     });
     return response.data;
@@ -26,7 +26,7 @@ export const createNewChat = async (members) => {
 export const clearUnreadMessageCount = async (chatId) => {
   try {
     const response = await axiosInstance.post(
-      "api/v1/chat/clear-unread-message",
+      "/api/v1/chat/clear-unread-message",
       {
         chatId,
       }

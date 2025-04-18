@@ -3,7 +3,7 @@ import { axiosInstance } from "./index";
 
 export const getLoggedUser = async () => {
   try {
-    const response = await axiosInstance.get(`api/v1/user/get-logged-user`);
+    const response = await axiosInstance.get(`/api/v1/user/get-logged-user`);
     return response.data; // Return the successful response data
   } catch (error) {
     // Log the error details for debugging
@@ -22,7 +22,7 @@ export const getLoggedUser = async () => {
 export const getAllUsers = async () => {
   try {
     // Replace 'url' with the actual base URL or ensure it's properly defined.
-    const response = await axiosInstance.get(`api/v1/user/get-all-users`);
+    const response = await axiosInstance.get(`/api/v1/user/get-all-users`);
     return response.data; // Return data if successful.
   } catch (error) {
     // Log error details for debugging.
@@ -47,7 +47,7 @@ export const uploadProfilePic = async (
 ) => {
   try {
     const response = await axiosInstance.post(
-      `api/v1/user/upload-profile-pic`,
+      `/api/v1/user/upload-profile-pic`,
       {
         image,
         //userId,

@@ -4,7 +4,7 @@ export const createNewMessage = async (message) => {
   try {
     console.log("Sending message:", message); // Log the input message
     const response = await axiosInstance.post(
-      `api/v1/message/new-message`,
+      `/api/v1/message/new-message`,
       message
     );
     console.log("Response data:", response.data); // Log the response data
@@ -33,7 +33,7 @@ export const getAllMessages = async (chatId) => {
   try {
     console.log("Fetching messages for chat ID:", chatId); // Log the input chatId
     const response = await axiosInstance.get(
-      `api/v1/message/get-all-messages/${chatId}`
+      `/api/v1/message/get-all-messages/${chatId}`
     );
     console.log("Response data:", response.data); // Log the response data
     return response.data;

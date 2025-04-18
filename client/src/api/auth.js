@@ -35,9 +35,9 @@ export const loginUser = async (user) => {
     const response = await axiosInstance.post(`/api/v1/auth/login`, user);
 
     // Save token to localStorage if login is successful
-    // if (response.data?.token) {
-    //   localStorage.setItem("token", response.data.token);
-    // }
+    if (response.data?.token) {
+      localStorage.setItem("token", response.data.token);
+    }
 
     return response.data; // Return data on success
   } catch (error) {
