@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 
 const socket = io(
   import.meta.env.VITE_REACT_SERVER_BASE_URL ||
-    "https://ressuman-real-time-chat-mern-server-app.vercel.app",
+    "https://ressuman-real-time-chat-server-app.onrender.com",
   {
     withCredentials: true,
     transports: ["websocket"], // Force WebSocket

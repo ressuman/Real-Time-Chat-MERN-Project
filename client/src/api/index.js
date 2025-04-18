@@ -3,7 +3,7 @@ import axios from "axios";
 export const axiosInstance = axios.create({
   baseURL:
     import.meta.env.VITE_REACT_SERVER_BASE_URL ||
-    "https://ressuman-real-time-chat-mern-server-app.vercel.app", // Use env variable
+    "https://ressuman-real-time-chat-server-app.onrender.com", // Use env variable
 });
 
 axiosInstance.interceptors.request.use(
