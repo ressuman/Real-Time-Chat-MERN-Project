@@ -1,5 +1,3 @@
----
-
 # Client README (Real-Time Chat Application)
 
 ## Features
@@ -65,8 +63,6 @@ npm run dev
 - Moment.js
 - Emoji Picker
 - React Hot Toast
-
----
 
 # Server README (Real-Time Chat Backend)
 
