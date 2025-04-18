@@ -7,11 +7,11 @@ const dbconfig = require("./config/dbConfig");
 
 const server = require("./app");
 
-const PORT = process.env.PORT_NUMBER || 6320;
-const HOST = process.env.PORT_HOST || "localhost";
+const PORT = process.env.PORT || 4292;
+//const HOST = process.env.PORT_HOST || "localhost";
 
-server.listen(PORT, HOST, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(
-    `Server is running: Listening to requests at http://${HOST}:${PORT}`
+    `Server is running: Listening to requests at http://0.0.0.0:${PORT}`
   );
 });
